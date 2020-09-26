@@ -10,6 +10,7 @@ class TodoItem extends React.Component {
           onChange={() => this.props.mummy(this.props.todo.id)} 
         />
         <li>{this.props.todo.title}</li>
+        <button onClick={() => this.props.delete(this.props.todo.id)}>Delete</button>
       </div>
     )
   }

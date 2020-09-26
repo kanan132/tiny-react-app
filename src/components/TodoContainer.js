@@ -7,7 +7,8 @@ class TodoContainer extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-     todos: [
+      next_id: 4,
+      todos: [
        {
          id: 1,
          title: "make todo container",
@@ -27,17 +28,27 @@ class TodoContainer extends React.Component {
     };    
   }
 
-  addTodo = (todo) => {
-    let better_structure = (todo) =>{
-      let id = this.state.todos.length + 1
-      return {
-        id : id,
-        title : todo,
-        completed : false
-      }
+  componentDidMount = () => {
+    let url = "https://run.mocky.io/v3/90b8def9-9e7d-4289-9474-5d8b12159631";
+    fetch(url).
+      then(resp => resp.json()).then(data => {
+        this.setState({todos: data['todos']}, 
+          () => { this.setState({next_id: data['next_id']}) }
+        );
     }
-    let new_todos = [...this.state.todos]
-    new_todos.push(better_structure(todo));
+    ).catch(e => console.error("Error"));
+  }
+
+
+
+  addTodo = (todo) => {
+    let create_todo = {"id": this.state.next_id, "title": todo, "completed": false}
+    let new_todos = [...this.state.todos, create_todo]
+    this.setState({todos: new_todos}, () => {this.setState({next_id: this.state.next_id + 1}) });
+  }
+
+  deleteTodo = (id) => {
+    let new_todos = this.state.todos.filter(todo => todo.id !== id);
     this.setState({todos: new_todos});
   }
 
@@ -60,7 +71,8 @@ class TodoContainer extends React.Component {
         />
         <TodoList 
           todos={this.state.todos} 
-          dummy={this.get_id} 
+          dummy={this.get_id}
+          delete={this.deleteTodo} 
         />
       </div>
     )
